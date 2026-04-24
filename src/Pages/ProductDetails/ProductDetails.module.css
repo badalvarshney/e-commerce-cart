@@ -40,10 +40,11 @@
   margin: 20px 0;
   color: #ffffff;
   text-align: center;
+  line-height: 100%;
 }
 
 .image {
-  width: 100%;
+  width: -webkit-fill-available;
   max-height: 420px;
   object-fit: contain;
   margin-bottom: 25px;
