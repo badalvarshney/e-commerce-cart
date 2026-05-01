@@ -3,7 +3,7 @@ import RootLayout from './Pages/Root';
 import HomePage from './Pages/HomePage/HomePage';
 import ProductDetails from './Pages/ProductDetails/ProductDetails';
 import Cart from './Pages/CartPage/Cart';
-
+import Wishlist from './Pages/Wishlist/Wishlist';
 
 const router = createBrowserRouter([
   {
@@ -13,6 +13,7 @@ const router = createBrowserRouter([
       { index: true, element: <HomePage /> },
       { path: '/products/:id', element: <ProductDetails /> },
       { path: '/cart', element: <Cart /> },
+      { path: '/wishlist', element: <Wishlist /> },
     ],
   },
 ]);

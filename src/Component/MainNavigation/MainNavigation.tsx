@@ -6,7 +6,26 @@ import { useEffect, useState } from 'react';
 
 function MainNavigation() {
     const { totalItems } = useCart();
+    const [wishlistCount, setWishlistCount] = useState<number>(0);
     const [animate, setAnimate] = useState<boolean>(false);
+
+    useEffect(() => {
+        const loadWishlist = () => {
+            const raw = localStorage.getItem('wishlist');
+            const items = raw ? JSON.parse(raw) : [];
+            setWishlistCount(Array.isArray(items) ? items.length : 0);
+        };
+
+        loadWishlist();
+
+        const handleWishlistChange = () => {
+            loadWishlist();
+        };
+
+        window.addEventListener('wishlistChange', handleWishlistChange);
+        return () => window.removeEventListener('wishlistChange', handleWishlistChange);
+    }, []);
+
     useEffect(() => {
         if (totalItems === 0) return;
         setAnimate(true);
@@ -39,6 +58,16 @@ function MainNavigation() {
                             }
                         >
                             Product Details
+                        </NavLink>
+                    </li>
+                    <li>
+                        <NavLink
+                            to="/wishlist"
+                            className={({ isActive }) =>
+                                isActive ? classes.active : undefined
+                            }
+                        >
+                            Wishlist {wishlistCount > 0 ? `(${wishlistCount})` : ''}
                         </NavLink>
                     </li>
                 </ul>

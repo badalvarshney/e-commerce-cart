@@ -85,6 +85,28 @@
   box-shadow: 0 6px 15px rgba(99, 102, 241, 0.4);
 }
 
+.addToWishlist {
+  margin-top: 12px;
+  padding: 14px;
+  width: 100%;
+  background-color: #f97316;
+  border: none;
+  border-radius: 10px;
+  color: white;
+  font-size: 18px;
+  cursor: pointer;
+  transition: background 0.25s ease;
+}
+
+.addToWishlist:hover {
+  background-color: #ea580c;
+}
+
+.addToWishlist:disabled {
+  background-color: #94a3b8;
+  cursor: default;
+}
+
 .loading {
   color: #94a3b8;
   text-align: center;

@@ -16,13 +16,14 @@ type Product = {
 };
 
 const ProductDetails = () => {
+    const navigate = useNavigate();
     const { id } = useParams<{ id: string }>();
+    const { addItemsToCart } = useCart();
+
     const [product, setProduct] = useState<Product | null>(null);
     const [loading, setLoading] = useState(true);
-    const { addItemsToCart } = useCart();
     const [isPopping, setIsPopping] = useState(false);
-
-    const navigate = useNavigate();
+    const [isWishlisted, setIsWishlisted] = useState(false);
 
     useEffect(() => {
         if (!id) return;
@@ -37,7 +38,6 @@ const ProductDetails = () => {
                 const data: Product = await response.json();
                 setProduct(data);
             } catch (err) {
-                // setError(err.message);
                 console.log(err)
             } finally {
                 setLoading(false);
@@ -46,6 +46,25 @@ const ProductDetails = () => {
 
         fetchProduct();
     }, [id]);
+
+    useEffect(() => {
+        if (!product) return;
+        const raw = localStorage.getItem("wishlist");
+        const list = raw ? JSON.parse(raw) : [];
+        setIsWishlisted(Array.isArray(list) && list.some((item: Product) => item.id === product.id));
+    }, [product]);
+
+    useEffect(() => {
+        const handleWishlistChange = () => {
+            if (!product) return;
+            const raw = localStorage.getItem("wishlist");
+            const list = raw ? JSON.parse(raw) : [];
+            setIsWishlisted(Array.isArray(list) && list.some((item: Product) => item.id === product.id));
+        };
+
+        window.addEventListener("wishlistChange", handleWishlistChange);
+        return () => window.removeEventListener("wishlistChange", handleWishlistChange);
+    }, [product]);
 
     if (loading) {
         return <Loader />;
@@ -65,6 +84,21 @@ const ProductDetails = () => {
         }, 400);
     };
 
+    const handleWishlist = (productItem: Product) => {
+        const raw = localStorage.getItem("wishlist");
+        const list = raw ? JSON.parse(raw) : [];
+        const alreadyAdded = Array.isArray(list) && list.some((item: Product) => item.id === productItem.id);
+
+        if (alreadyAdded) {
+            return;
+        }
+
+        const nextWishlist = [...(Array.isArray(list) ? list : []), productItem];
+        localStorage.setItem("wishlist", JSON.stringify(nextWishlist));
+        setIsWishlisted(true);
+        window.dispatchEvent(new Event("wishlistChange"));
+    }
+
     return (
         <div className={styles.container}>
             <button
@@ -83,10 +117,19 @@ const ProductDetails = () => {
             <button onClick={handleClick} className={`${styles.addToCart} ${isPopping ? styles.pop : ''}`}>
                 Add to Cart
             </button>
-
-
+            <button
+                onClick={() => handleWishlist(product)}
+                className={styles.addToWishlist}
+                disabled={isWishlisted}
+            >
+                {isWishlisted ? 'Added to Wishlist' : 'Add to Wishlist'}
+            </button>
         </div>
     );
 };
 
 export default ProductDetails;
+
+
+
+
